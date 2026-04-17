@@ -33,9 +33,8 @@ type Activity struct {
 	SiteURL   string   `json:"siteURL"`
 	Status    string   `json:"status"`
 	Media     struct {
-		BannerImage string `json:"bannerImage"`
-		CoverImage  struct {
-			Medium string `json:"medium"`
+		CoverImage struct {
+			Large string `json:"large"`
 		} `json:"coverImage"`
 		SiteURL string `json:"siteURL"`
 		Title   struct {
@@ -167,9 +166,8 @@ query ListActivity($page: Int, $perPage: Int, $userId: Int, $sort: [ActivitySort
         siteUrl
         status
         media {
-          bannerImage
           coverImage {
-            medium
+            large
           }
           siteUrl
           title {
@@ -238,7 +236,7 @@ func mkFeed(tagger, feedURL, username string, activities []Activity) Feed {
 
 		content := Content{
 			Type: "html",
-			Body: fmt.Sprintf(`<a href="%s"><img src="%s" alt="%s"></a>`, activity.Media.SiteURL, activity.Media.CoverImage.Medium, mediaTitle),
+			Body: fmt.Sprintf(`<a href="%s"><img src="%s" alt="%s"></a>`, activity.Media.SiteURL, activity.Media.CoverImage.Large, mediaTitle),
 		}
 
 		entry := Entry{
