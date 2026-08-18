@@ -105,7 +105,17 @@ func postJSON(client *http.Client, body []byte) (*http.Response, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf(`received status "%s"`, resp.Status)
+		// 403 may indicate API is down and may include a message, per https://docs.anilist.co/guide/considerations
+		var result struct {
+			Errors []struct {
+				Message string `json:"message"`
+			} `json:"errors"`
+		}
+		err = fmt.Errorf(`received status %s`, resp.Status)
+		if json.NewDecoder(resp.Body).Decode(&result) == nil && len(result.Errors) > 0 {
+			err = fmt.Errorf(`%w: %q`, err, result.Errors[0].Message)
+		}
+		resp.Body.Close()
 		return nil, err
 	}
 
